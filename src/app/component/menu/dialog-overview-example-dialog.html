@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>REGISTRO DE NOVA ANÁLISE</h1>
+<div mat-dialog-content>
+  <form appearance="fill" class="form">
+    <div class="form-control">
+        <label>Digite a análise</label>
+    <input matInput [(ngModel)]="data.nomeAnalise" name="nomeAnalise"> 
+    </div>
+   <div class="form-control">
+    <label>Digite a unidade</label>
+    <input matInput [(ngModel)]="data.unidadeAnalise" name="unidadeAnalise">
+   </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancelar</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Adicionar</button>
+</div>

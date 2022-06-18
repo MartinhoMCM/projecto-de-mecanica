@@ -1,0 +1,29 @@
+@import url('../styles.scss');
+$appBar : #7c6ff1;
+
+.mat-card{
+    margin: 0;
+    padding: 0;
+    background-color: $appBar;
+}
+.mat-card{
+    height: 3%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 0%;
+    color: white;
+    .mat-card-title{
+        font-size: 10pt;
+        font-weight: 500;
+        text-transform: capitalize;    
+    }
+    .mat-card-content{
+        font-size: 10pt;
+        margin-right: 14px;
+        text-transform: capitalize;
+    }
+}

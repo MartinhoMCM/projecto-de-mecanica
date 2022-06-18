@@ -1,0 +1,20 @@
+.graphic-container{
+    margin: 0 32px;
+    margin-top: 32px;
+    .card{
+      
+        height: 500px;
+        width: 900px;
+        .flex{
+            height: 400px;
+
+         
+        }
+    }
+    canvas{
+        height: 500px !important;
+        margin-right: 16px;
+        width: 350px;
+        
+    }
+}

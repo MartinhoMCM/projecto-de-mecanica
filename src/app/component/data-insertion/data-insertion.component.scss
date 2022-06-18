@@ -1,0 +1,84 @@
+@import '../../../styles.scss';
+
+.container{
+   padding-left: 0px;
+
+   width: 100%;
+    .nav{
+        margin-top: 32px;
+        width: 500px;
+        padding: 0 16px;
+        background-color: transparent;
+        height: 100%;
+        overflow: hidden;
+        form{
+            position: relative;
+            margin-left: 30px;
+        }
+
+        .card{
+            width: 460px;
+            height: 250px;
+            outline: $warning;
+            border: 3px solid black;
+            box-shadow: .5rem .5rem 0 var(--color-shadow, $warning);
+            label {
+                font-size: 14pt;
+                color: black;
+                font-weight: 400;
+
+             
+                }
+
+            
+        }
+        .separator{
+            height: 40px;
+        }
+        table {
+            width: 460px;
+        }
+    }
+}
+
+h2{
+    font-size: 18pt;
+    font-weight: 700;
+    color: black;
+    text-transform: uppercase;
+}
+
+.button-group {
+    margin-top: calc(var(--size-bezel) * 2.5);
+  }
+  
+  button {
+    color: white;
+    padding: 5px 12px;
+    background: $warning;
+    border: none;
+    border-radius: var(--size-radius);
+    font-weight: 900;
+    font-size: 14pt;
+    
+    &[type=reset]{
+      background: white;
+      font-weight: 200;
+      color: $warning;
+    } 
+  }
+  
+  button + button {
+    margin-left: calc(var(--size-bezel) * 2);
+  }
+  input{
+    height: 40px;
+    width: 200px;
+    margin: 8px 0px;
+    border-radius: 2px;
+    border: 1px solid black;
+    color: black;
+    outline: none;
+    font-size: 14pt;
+    text-indent: 10px;
+}
