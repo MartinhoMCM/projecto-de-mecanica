@@ -1,5 +1,12 @@
 @import '../../../styles.scss';
 
+
+.title {
+  margin: 8px auto;
+  font-size: 28pt;
+  transform: translateX(40%);
+
+}
 .container{
    padding-left: 0px;
 
@@ -32,12 +39,34 @@
 
             
         }
+     
         .separator{
             height: 40px;
         }
         table {
             width: 460px;
         }
+    }
+
+    .ordenada{
+      margin-top: 32px;
+     div.form-group{
+      padding-left: 20px;
+      label{
+        margin-right: 8px;
+      }
+      input{
+        height: 40px;
+        width: 200px;
+        margin: 8px 0px;
+        border-radius: 2px;
+        border: 1px solid black;
+        color: black;
+        outline: none;
+        font-size: 14pt;
+        text-indent: 10px;
+    }
+     }
     }
 }
 
@@ -81,4 +110,17 @@ h2{
     outline: none;
     font-size: 14pt;
     text-indent: 10px;
+}
+
+
+button.ng-invalid{
+  background-color: #ccc; /* red */
+  color: black;
+}
+.confirmar{
+  margin-left: 4px;
+  width: 60px;
+  font-size: 12pt;
+  font-weight: 400;
+  padding: 4px 2px;
 }

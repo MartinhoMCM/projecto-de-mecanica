@@ -17,9 +17,24 @@ export class MenuComponent implements OnInit {
   unidadeAnalise?: string;
   newAnalise?: DialogData;
 
-  analises ? : DialogData [];
+
+  analises: DialogData[] = [
+    {
+    nomeAnalise:'Análise de óleo',
+    unidadeAnalise: 'm3'
+  }, 
+  {
+    nomeAnalise:'Análise de viscosidade',
+    unidadeAnalise: 'v'
+  },
+  {
+    nomeAnalise:'Análise de densidade',
+    unidadeAnalise: 'd'
+  }
+  ];
 
   itemMenuSelected = 0;
+  analiseActual =this.analises[0];
 
   constructor(
     private router: Router,
@@ -29,13 +44,11 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  
+      
+   if(this.getCurrentData()!=null){
     this.analises = this.getCurrentData();
-
-    if(this.analises.length>=0){
-
-    }
-    else {
+    console.log("analises ", this.analises);
+    if(!(this.analises.length>=0)){
       this.analises =[
         {
         nomeAnalise:'Análise de óleo',
@@ -52,6 +65,15 @@ export class MenuComponent implements OnInit {
       ]
     localStorage.setItem('analises', JSON.stringify(this.analises));
     }
+   }
+
+   //Obter Analise Actual 
+  if(localStorage.getItem('analiseActual')){
+    this.analiseActual = JSON.parse(localStorage.getItem('analiseActual')??'') as DialogData;
+    console.log("Analise Actual ", this.analiseActual);
+    
+    
+  }
   }
 
   getClass(): string{
@@ -64,23 +86,37 @@ export class MenuComponent implements OnInit {
 
   changeMenuItem(position: number): void{
     this.itemMenuSelected = position;
+    this.analiseActual =this.analises[position];
+    this.reloadWindows();
+  }
+
+  reloadWindows(){
+    localStorage.removeItem('analiseActual');
+    localStorage.setItem('analiseActual', JSON.stringify(this.analiseActual));
+    location.reload();
   }
 
   adicionarAnalise(novaAnalise: DialogData){
+  if (novaAnalise.nomeAnalise !=null && novaAnalise.nomeAnalise.length >= 0) {
     let data = this.getCurrentData();
     data.push(
       novaAnalise
     )
-  console.log("data ", data);
   localStorage.removeItem('analises');
   localStorage.setItem('analises', JSON.stringify(data));
   this.analises = data;
   }
-
+}
   getCurrentData(): Array<DialogData>{
-    let data = JSON.parse(localStorage.getItem("analises")??'') as Array<DialogData>;
+    let data: any;
+    if(localStorage.getItem("analises")){
+      data = JSON.parse(localStorage.getItem("analises")??'') as Array<DialogData>;
+    }
+    else{
+     data =this.analises;
+    }
+    
     return data;
-  
   }
 
   getData(){

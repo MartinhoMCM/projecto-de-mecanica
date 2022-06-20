@@ -1,26 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import {  FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatSidenavContainer } from '@angular/material/sidenav';
-
-
-export interface PeriodicElement {
-  resultado: string;
-  position: number;
-  data: number;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, resultado: 'Hydrogen', data: 1.0079},
-  {position: 2, resultado: 'Helium', data: 4.0026},
-  {position: 3, resultado: 'Lithium', data: 6.941},
-  {position: 4, resultado: 'Beryllium', data: 9.0122},
-  {position: 5, resultado: 'Boron', data: 10.811},
-  {position: 6, resultado: 'Carbon', data: 12.0107},
-  {position: 7, resultado: 'Nitrogen', data: 14.0067},
-  {position: 8, resultado: 'Oxygen', data: 15.9994},
-  {position: 9, resultado: 'Fluorine', data: 18.9984},
-  {position: 10, resultado: 'Neon', data: 20.1797},
-];
+import { MatTableDataSource } from '@angular/material/table';
+import { Model } from 'src/app/model/model';
+import { ServiceService } from 'src/app/service.service';
+import { Form } from '@angular/forms';
 
 @Component({
   selector: 'app-data-insertion',
@@ -29,20 +12,65 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class DataInsertionComponent implements OnInit {
 
-  
-  displayedColumns: string[] = ['position', 'resultado', 'data'];
-  dataSource = ELEMENT_DATA;
+  constructor(private service: ServiceService ,
+    private changeDetectorRefs: ChangeDetectorRef) {
 
+  }
+
+  ordenada: string = '';
+  @Input() analise = new Input();
+  analises: Model [] =[]; 
+
+  submitted =false;
+  displayedColumns: string[] = ['resultado', 'data'];
+  dataSource = new MatTableDataSource<Model>([]);
+  model ?: Model;
+ 
   formDados = new FormGroup({
     resultado: new FormControl('',[ Validators.required]),
     date: new FormControl('',[Validators.required])
   });
 
-  constructor( ) {
-
-   }
-
-  ngOnInit(): void {
+  get Obterresultado(){
+    return this.formDados.get('resultado')?.value ??'';
+  }
+  
+  get Obterdate(){
+    return new Date(this.formDados.get('date')?.value ??'');
   }
 
+
+  ngOnInit(): void {
+    this.refresh(); 
+  }
+
+  onSubmit(){
+    this.submitted =true;
+   this.model = new Model(this.Obterresultado, this.Obterdate);
+    this.service.saveResult(this.analise.nomeAnalise, this.model).subscribe((result)=>{
+         this.refresh(); 
+    });
+    
+  }
+
+  reset(){
+    this.formDados.reset();
+  }
+
+  refresh(){
+    this.service.getResultData(this.analise.nomeAnalise).subscribe(data =>{
+       this.dataSource.data = data;
+       this.analises =data;
+       this.changeDetectorRefs.detectChanges();
+        
+    })
+  }
+
+  updateOrdenada(value:string){
+   let valor:number = +value;
+   if(!isNaN(valor)){
+    this.service.saveOrdenada(valor);
+    location.reload();
+   }
+  }
 }

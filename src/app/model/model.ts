@@ -1,15 +1,15 @@
 export class Model {
 
-    public result?:string;
-    public date?: string;
+    public result:string;
+    public date: Date;
 
-    constructor(result: string, date: string){
+    constructor(result: string, date: Date){
         this.result = result;
         this.date = date; 
     }
 
     getResult(){
-        return this.date;
+        return this.result
     }
     getDate(){
         return this.date;
@@ -17,3 +17,6 @@ export class Model {
 
 
 }
+export class ImageSnippet {
+    constructor(public src: string, public file: File) {}
+  }

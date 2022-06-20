@@ -1,7 +1,9 @@
-import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
+import { Chart, ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { Component, OnInit, ViewChild } from '@angular/core';
-
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ImageSnippet, Model } from 'src/app/model/model';
+import AnnotationPlugin, { AnnotationOptions, AnnotationPluginOptions } from "chartjs-plugin-annotation";
+import { ServiceService } from 'src/app/service.service';
 @Component({
   selector: 'app-graphic',
   templateUrl: './graphic.component.html',
@@ -9,99 +11,102 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 })
 export class GraphicComponent implements OnInit {
 
-  constructor() { }
+  @Input() analises : Model[] = new Input();
+  ordenada:number  = 5;
+  resultAnalises: number[] =[];
+  dateAnalises: string[] = [];
+
+
+  public lineChartOptions: ChartConfiguration['options'];
+
+  public lineChartData: ChartConfiguration['data'] ={
+    datasets :[],
+    labels: []
+  };
+
+  constructor(private service: ServiceService) {
+    Chart.register(AnnotationPlugin);
+   this.service.getOrdenada().subscribe((data)=>{
+    this.ordenada = data;
+    this.lineChartOptions = {
+        elements: {
+          line: {
+            tension: 0
+          }
+        },
+        scales: {
+          // We use this empty structure as a placeholder for dynamic theming.
+          y: {
+            stacked: true
+          }
+        },
+    
+        plugins: {
+          legend: { display: true },
+          annotation:{
+            annotations:
+            [
+              {
+                type: 'line',
+                scaleID: 'y',
+                value: this.ordenada,
+                borderColor: 'red',
+                borderWidth: 3,
+                label: {
+                  position: 'center',
+                  enabled: true,
+                  color: 'orange',
+                  content: '',
+                  font: {
+                    weight: 'bold'
+                  }
+                }
+              },
+            ]
+          }
+          
+        }
+      };
+
+      });
+   }
 
   ngOnInit(): void {
+   this.setChartData();
   }
 
-  public lineChartData: ChartConfiguration['data'] = {
-    datasets: [
-      {
-        data: [ 65, 59, 80, 81, 56, 55, 40 ],
-        label: 'Series A',
-        backgroundColor: 'rgba(148,159,177,0.2)',
-        borderColor: 'rgba(148,159,177,1)',
-        pointBackgroundColor: 'rgba(148,159,177,1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(148,159,177,0.8)',
-        fill: 'origin',
-      },
-      {
-        data: [ 28, 48, 40, 19, 86, 27, 90 ],
-        label: 'Series B',
-        backgroundColor: 'rgba(77,83,96,0.2)',
-        borderColor: 'rgba(77,83,96,1)',
-        pointBackgroundColor: 'rgba(77,83,96,1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(77,83,96,1)',
-        fill: 'origin',
-      },
-      {
-        data: [ 180, 480, 770, 90, 1000, 270, 400 ],
-        label: 'Series C',
-        yAxisID: 'y-axis-1',
-        backgroundColor: 'rgba(255,0,0,0.3)',
-        borderColor: 'red',
-        pointBackgroundColor: 'rgba(148,159,177,1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(148,159,177,0.8)',
-        fill: 'origin',
-      }
-    ],
-    labels: [ '0', '1', '2', '4', '5', '6', '7', '8','9','10' ]
-  };
-
-  public lineChartOptions: ChartConfiguration['options'] = {
-    elements: {
-      line: {
-        tension: 0.5
-      }
-    },
-    scales: {
-      // We use this empty structure as a placeholder for dynamic theming.
-      x: {},
-      'y-axis-0':
+  setChartData(){
+    this.lineChartData = {
+      datasets: [
         {
-          position: 'left',
+          data: this.getResult(),
+          label: 'Gráfico',
+          backgroundColor: 'rgba(148,159,177,0.2)',
+          borderColor: 'rgba(148,159,177,1)',
+          pointBackgroundColor: 'rgba(148,159,177,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+          fill: 'origin',
         },
-      'y-axis-1': {
-        position: 'right',
-        grid: {
-          color: 'rgba(255,0,0,0.3)',
-        },
-        ticks: {
-          color: 'red'
-        }
-      }
-    },
+        // {
+        //   data: [ 28, 48, 40, 19, 86, 27, 90 ],
+        //   label: 'Series B',
+        //   backgroundColor: 'rgba(77,83,96,0.2)',
+        //   borderColor: 'rgba(77,83,96,1)',
+        //   pointBackgroundColor: 'rgba(77,83,96,1)',
+        //   pointBorderColor: '#fff',
+        //   pointHoverBackgroundColor: '#fff',
+        //   pointHoverBorderColor: 'rgba(77,83,96,1)',
+        //   fill: 'origin',
+        // },
+      
+      ],
+      labels: this.getDate()
+    };
+  }
 
-    plugins: {
-      legend: { display: true },
-      // annotation: {
-      //   annotations: [
-      //     {
-      //       type: 'line',
-      //       scaleID: 'x',
-      //       value: 'March',
-      //       borderColor: 'orange',
-      //       borderWidth: 2,
-      //       label: {
-      //         position: 'center',
-      //         enabled: true,
-      //         color: 'orange',
-      //         content: 'LineAnno',
-      //         font: {
-      //           weight: 'bold'
-      //         }
-      //       }
-      //     },
-      //   ],
-      // }
-    }
-  };
+  
 
   public lineChartType: ChartType = 'line';
 
@@ -157,6 +162,36 @@ export class GraphicComponent implements OnInit {
     }
 
     this.chart?.update();
+  }
+
+  sortResultByDate(){
+    var aux;
+    for(let count=0; count<this.analises.length-1; count++){
+      let date1 = new Date(this.analises[count].date);
+      let date2 = new Date(this.analises[count+1].date);
+      if((date1.getDate() - date2.getDate())>0){
+         aux = this.analises[count+1];
+         this.analises[count+1] = this.analises[count];
+         this.analises[count] = aux;
+      }
+    }
+  }
+
+  getResult(): number []{
+     this.analises.forEach((a)=>{
+         this.resultAnalises.push(+a.result)
+     });
+    
+     return this.resultAnalises;
+  }
+
+  getDate(){
+    this.analises.forEach((a)=>{
+       this.dateAnalises.push(a.date.toString().substring(5,10))
+       
+    })
+    return this.dateAnalises;
+   
   }
 
 }

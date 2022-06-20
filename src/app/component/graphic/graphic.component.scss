@@ -3,7 +3,7 @@
     margin-top: 32px;
     .card{
       
-        height: 500px;
+        height: 300px;
         width: 900px;
         .flex{
             height: 400px;
@@ -11,10 +11,28 @@
          
         }
     }
+
     canvas{
-        height: 500px !important;
+        height: 300px !important;
         margin-right: 16px;
-        width: 350px;
+        width: 300px;
         
+    }
+    .ordenada{
+        margin: 16px 0px;
+    }
+    input{
+        height: 30px;
+        width: 200px;
+        margin: 8px 8px;
+        border-radius: 3px;
+        border: 1px solid black;
+        color: black;
+        outline: none;
+        font-size: 14pt;
+        text-indent: 0px;
+    }
+    .ordenada{
+        margin: 16px 0;
     }
 }
