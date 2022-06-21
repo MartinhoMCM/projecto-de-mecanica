@@ -8,6 +8,8 @@ import { Model } from './model/model';
 export class ServiceService {
 
   private ordenadaValue = new BehaviorSubject<number>(5);
+  private analiseBehavior = new BehaviorSubject<Model[]>([]);
+  private _analiseBehavior = this.analiseBehavior.asObservable();
   private _ordenadaValue_ = this.ordenadaValue.asObservable();
 
   constructor() { }
@@ -22,23 +24,29 @@ export class ServiceService {
         resultadosActuas.push(model);
         localStorage.removeItem(`${tipoAnalise}`);
         localStorage.setItem(`${tipoAnalise}`, JSON.stringify(resultadosActuas));
+        this.analiseBehavior.next(resultadosActuas);
     }
-    // else{
-    //   resultadosActuas.push(model)
-    //   localStorage.removeItem(`${tipoAnalise}`);
-    //   localStorage.setItem(`${tipoAnalise}`, JSON.stringify(model));
-    // }
     return of(true);
    }
 
    getResultData(tipoAnalise:string): Observable<Model[]>{
     if(localStorage.getItem(`${tipoAnalise}`)??''){
       let data = JSON.parse(localStorage.getItem(`${tipoAnalise}`)??'') as Array<Model>;
+      this.analiseBehavior.next(data);
       return of(data);
     }
    return of([]);
    }
 
+   getResultDataObservable(tipoAnalise:string): Observable<Model[]>{
+    if(localStorage.getItem(`${tipoAnalise}`)??''){
+      let data = JSON.parse(localStorage.getItem(`${tipoAnalise}`)??'') as Array<Model>;
+      this.analiseBehavior.next(data);
+      return of(data);
+    }
+   return this._analiseBehavior;
+   }
+   
    getCurrentData(tipoAnalise:string): Array<Model>{
     let data:Array<Model>;
     data =[];

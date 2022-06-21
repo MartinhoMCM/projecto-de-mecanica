@@ -2,7 +2,7 @@
     margin: 0 32px;
     margin-top: 32px;
     .card{
-      
+        display: block;
         height: 300px;
         width: 900px;
         .flex{
@@ -34,5 +34,17 @@
     }
     .ordenada{
         margin: 16px 0;
+    }
+    .upload-file{
+        display: block;
+        width: 900px;
+        height: 40px;
+        margin: 20px 0px;
+    }
+    .img-logo{
+        height: 300px;
+        width: 900px;
+        object-fit: cover;
+        border: none;
     }
 }

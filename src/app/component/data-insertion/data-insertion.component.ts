@@ -12,10 +12,8 @@ import { Form } from '@angular/forms';
 })
 export class DataInsertionComponent implements OnInit {
 
-  constructor(private service: ServiceService ,
-    private changeDetectorRefs: ChangeDetectorRef) {
 
-  }
+  constructor(private service: ServiceService ) {}
 
   ordenada: string = '';
   @Input() analise = new Input();
@@ -60,9 +58,7 @@ export class DataInsertionComponent implements OnInit {
   refresh(){
     this.service.getResultData(this.analise.nomeAnalise).subscribe(data =>{
        this.dataSource.data = data;
-       this.analises =data;
-       this.changeDetectorRefs.detectChanges();
-        
+       this.analises =data;   
     })
   }
 
@@ -72,5 +68,5 @@ export class DataInsertionComponent implements OnInit {
     this.service.saveOrdenada(valor);
     location.reload();
    }
-  }
+  }  
 }

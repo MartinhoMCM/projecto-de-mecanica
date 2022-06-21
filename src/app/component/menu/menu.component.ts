@@ -70,9 +70,7 @@ export class MenuComponent implements OnInit {
    //Obter Analise Actual 
   if(localStorage.getItem('analiseActual')){
     this.analiseActual = JSON.parse(localStorage.getItem('analiseActual')??'') as DialogData;
-    console.log("Analise Actual ", this.analiseActual);
-    
-    
+  
   }
   }
 

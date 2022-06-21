@@ -4,6 +4,9 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ImageSnippet, Model } from 'src/app/model/model';
 import AnnotationPlugin, { AnnotationOptions, AnnotationPluginOptions } from "chartjs-plugin-annotation";
 import { ServiceService } from 'src/app/service.service';
+import { FileUploadService } from 'src/app/file-upload.service';
+
+
 @Component({
   selector: 'app-graphic',
   templateUrl: './graphic.component.html',
@@ -12,11 +15,17 @@ import { ServiceService } from 'src/app/service.service';
 export class GraphicComponent implements OnInit {
 
   @Input() analises : Model[] = new Input();
+  @Input() analiseActual = new Input();
   ordenada:number  = 5;
   resultAnalises: number[] =[];
   dateAnalises: string[] = [];
-
-
+  
+  // Variable to store shortLink from api response
+  shortLink: string = "";
+  loading: boolean = false; // Flag variable
+  file?: File ; // Variable to store file
+  isUploaded : boolean = false;
+  
   public lineChartOptions: ChartConfiguration['options'];
 
   public lineChartData: ChartConfiguration['data'] ={
@@ -24,7 +33,8 @@ export class GraphicComponent implements OnInit {
     labels: []
   };
 
-  constructor(private service: ServiceService) {
+  constructor(private service: ServiceService,
+    private fileUploadService: FileUploadService) {
     Chart.register(AnnotationPlugin);
    this.service.getOrdenada().subscribe((data)=>{
     this.ordenada = data;
@@ -72,14 +82,28 @@ export class GraphicComponent implements OnInit {
    }
 
   ngOnInit(): void {
-   this.setChartData();
+    this.service.getResultDataObservable(this.analiseActual.nomeAnalise)
+    .subscribe((resultado)=>{
+      console.log("updating ...", resultado);
+      resultado.forEach((data)=>{
+        this.resultAnalises.push(+data.result)
+        this.dateAnalises.push(data.date.toString().substring(5,10))
+      })
+      this.setChartData();
+    });
+   
+   this.fileUploadService.getImageUploaded(this.analiseActual).subscribe((imgName)=>{
+    let img = document.getElementById('img-logo') as HTMLImageElement;
+    img.src =imgName;
+   });
   }
 
   setChartData(){
+   // this.getResultObservable();
     this.lineChartData = {
       datasets: [
         {
-          data: this.getResult(),
+          data:  this.resultAnalises,
           label: 'Gráfico',
           backgroundColor: 'rgba(148,159,177,0.2)',
           borderColor: 'rgba(148,159,177,1)',
@@ -102,8 +126,19 @@ export class GraphicComponent implements OnInit {
         // },
       
       ],
-      labels: this.getDate()
+      labels: this.dateAnalises
     };
+  }
+  getResultObservable() :void{
+   this.service.getResultDataObservable(this.analiseActual.nomeAnalise)
+    .subscribe((resultado)=>{
+      console.log("updating ...", resultado);
+      resultado.forEach((data)=>{
+        this.resultAnalises.push(+data.result);
+        this.dateAnalises.push(data.toString().substring(5,10))
+      })
+    });
+    this.setChartData();
   }
 
   
@@ -181,7 +216,7 @@ export class GraphicComponent implements OnInit {
      this.analises.forEach((a)=>{
          this.resultAnalises.push(+a.result)
      });
-    
+     console.log("resultado ", this.resultAnalises);
      return this.resultAnalises;
   }
 
@@ -191,7 +226,32 @@ export class GraphicComponent implements OnInit {
        
     })
     return this.dateAnalises;
-   
   }
+
+   // On file Select
+   onChange(event:any) {
+    this.file = event.target.files[0];
+}
+
+// OnClick of button Upload
+onUpload() {
+    this.loading = !this.loading;
+    if(this.file){
+      this.isUploaded = true;
+      let img = document.getElementById('img-logo') as HTMLImageElement;
+      img.src =this.file.name;
+    }
+    this.fileUploadService.upload(this.file!, this.analiseActual).subscribe(
+        (event: any) => {
+            if (typeof (event) === 'object') {
+
+                // Short link via api response
+                this.shortLink = event.link;
+
+                this.loading = false; // Flag variable 
+            }
+        }
+    );
+}
 
 }

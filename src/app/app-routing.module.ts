@@ -6,7 +6,7 @@ import { MenuComponent } from './component/menu/menu.component';
 
 const routes: Routes = [
   {
-    path:'', redirectTo:'/dados', pathMatch:'full'
+    path:'', redirectTo:'/login', pathMatch:'full'
   },
   {
     path: 'login', component: LoginComponent
