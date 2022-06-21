@@ -1,0 +1,48 @@
+
+mat-card {
+  max-width: 700px;
+  margin: 2em auto;
+  text-align: center;
+}
+
+mat-form-field {
+  display: block;
+}
+input{
+  position: relative;
+  height: 40px;
+  width: 96%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: black;
+  outline: none;
+  font-size: 14pt;
+
+}
+.playing .game-field {
+  cursor: pointer;
+}
+button {
+  background-color: #7c6ff1;
+  height: 50px;
+  width: 80px;
+  color: white;
+  padding: auto;
+  font-size: 14pt;
+  font-weight: 500;
+  border-radius: 5px;
+}
+
+button, mat-slide-toggle {
+  margin-bottom: 2rem;
+}
+.logo{
+  height: 250px;
+  width: 250px;
+  transform: translateX(10px);
+  margin: 8px auto;
+  border-radius: 50%;
+  object-fit: cover;
+  background-image: url('../../asset/logo.JPG');
+}

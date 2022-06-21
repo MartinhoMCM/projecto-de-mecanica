@@ -18,14 +18,17 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field'
 import { MatNativeDateModule } from '@angular/material/core';
 import {MatDialogModule} from '@angular/material/dialog';
+import { LoginComponent } from './component/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    LoginComponent,
     MenuComponent,
     DataInsertionComponent,
     GraphicComponent,
-    DialogOverviewExampleDialog
+    DialogOverviewExampleDialog,
+   
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule ,
-    MatDialogModule
+    MatDialogModule,
     
   ],
   providers: [
