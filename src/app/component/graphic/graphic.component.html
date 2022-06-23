@@ -23,9 +23,23 @@
             Upload
         </button>
     </mat-card-title>
-    <mat-card-content >
+     <mat-card-content class="descricao" >
+        <h2>Descrição</h2>
+       <div *ngIf="!isDescriptionSaved else loading">
+        <textarea class="informativa" [(ngModel)]="descriptionText" #ctrl="ngModel" value="descricaoText" name="" id="" cols="30" rows="10" required></textarea>
+        <button (click)="saveDescricao()"  class="btn salvar" [hidden]="!ctrl.valid">Salvar</button>
+       </div>
+        <ng-template #loading class="descricaoText">
+            <h3 class="paragraph">
+                {{descriptionText}}
+            </h3>
+            <button (click)="editDescricao()"  class="btn salvar">Editar</button>
+         </ng-template>
+     </mat-card-content>
+   
+    <!-- <mat-card-content >
         <img id="img-logo" class="img-logo" src="" alt="" sizes="" srcset="">
-    </mat-card-content>
+    </mat-card-content> -->
    </mat-card>
 
 </div>

@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Model } from 'src/app/model/model';
 import { ServiceService } from 'src/app/service.service';
 import { Form } from '@angular/forms';
+import { DialogData } from '../menu/menu.component';
 
 @Component({
   selector: 'app-data-insertion',
@@ -15,6 +16,8 @@ export class DataInsertionComponent implements OnInit {
 
   constructor(private service: ServiceService ) {}
 
+  analiseActual?: DialogData;
+  
   ordenada: string = '';
   @Input() analise = new Input();
   analises: Model [] =[]; 
@@ -39,7 +42,11 @@ export class DataInsertionComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.refresh(); 
+    this.service.getAnaliseActual().subscribe((analiseActual)=>{
+      this.analiseActual = analiseActual;
+      this.refresh(); 
+});
+   
   }
 
   onSubmit(){
@@ -56,9 +63,11 @@ export class DataInsertionComponent implements OnInit {
   }
 
   refresh(){
-    this.service.getResultData(this.analise.nomeAnalise).subscribe(data =>{
+    let name =this.analiseActual?.nomeAnalise;
+    this.service.getResultDataObservable(name!).subscribe(data =>{
        this.dataSource.data = data;
        this.analises =data;   
+       return;
     })
   }
 
@@ -66,7 +75,7 @@ export class DataInsertionComponent implements OnInit {
    let valor:number = +value;
    if(!isNaN(valor)){
     this.service.saveOrdenada(valor);
-    location.reload();
+   // location.reload();
    }
   }  
 }

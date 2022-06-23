@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { ServiceService } from 'src/app/service.service';
 
 export interface DialogData {
   nomeAnalise: string;
@@ -17,12 +18,7 @@ export class MenuComponent implements OnInit {
   unidadeAnalise?: string;
   newAnalise?: DialogData;
 
-
   analises: DialogData[] = [
-    {
-    nomeAnalise:'Análise de óleo',
-    unidadeAnalise: 'm3'
-  }, 
   {
     nomeAnalise:'Análise de viscosidade',
     unidadeAnalise: 'v'
@@ -34,11 +30,12 @@ export class MenuComponent implements OnInit {
   ];
 
   itemMenuSelected = 0;
-  analiseActual =this.analises[0];
+  analiseActual: DialogData = this.analises[0];
 
   constructor(
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private serviceAnalise : ServiceService
   ) {
    
   }
@@ -47,13 +44,8 @@ export class MenuComponent implements OnInit {
       
    if(this.getCurrentData()!=null){
     this.analises = this.getCurrentData();
-    console.log("analises ", this.analises);
     if(!(this.analises.length>=0)){
       this.analises =[
-        {
-        nomeAnalise:'Análise de óleo',
-        unidadeAnalise: 'm3'
-      }, 
       {
         nomeAnalise:'Análise de viscosidade',
         unidadeAnalise: 'v'
@@ -69,9 +61,11 @@ export class MenuComponent implements OnInit {
 
    //Obter Analise Actual 
   if(localStorage.getItem('analiseActual')){
-    this.analiseActual = JSON.parse(localStorage.getItem('analiseActual')??'') as DialogData;
-  
+    //this.analiseActual = JSON.parse(localStorage.getItem('analiseActual')??'') as DialogData;
   }
+    this.serviceAnalise.getAnaliseActual().subscribe((analise)=>{
+         this.analiseActual = analise
+    })
   }
 
   getClass(): string{
@@ -91,7 +85,7 @@ export class MenuComponent implements OnInit {
   reloadWindows(){
     localStorage.removeItem('analiseActual');
     localStorage.setItem('analiseActual', JSON.stringify(this.analiseActual));
-    location.reload();
+    this.serviceAnalise.saveAnaliseActual(this.analiseActual!)
   }
 
   adicionarAnalise(novaAnalise: DialogData){

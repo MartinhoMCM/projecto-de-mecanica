@@ -1,8 +1,18 @@
 
+.container{
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background: url('../../asset/logo.JPG') no-repeat;
+  object-fit: cover;
+  background-size: cover;
+  
+}
 mat-card {
   max-width: 700px;
-  margin: 2em auto;
+  margin: 8em auto;
   text-align: center;
+  border-radius: 10px;
 }
 
 mat-form-field {
@@ -26,7 +36,7 @@ input{
 button {
   background-color: #7c6ff1;
   height: 50px;
-  width: 80px;
+  width: 100px;
   color: white;
   padding: auto;
   font-size: 14pt;
@@ -46,3 +56,4 @@ button, mat-slide-toggle {
   object-fit: cover;
   background-image: url('../../asset/logo.JPG');
 }
+

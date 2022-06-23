@@ -47,4 +47,41 @@
         object-fit: cover;
         border: none;
     }
+    .informativa{
+        width: 900px;
+        height: 200px;
+        color: black;
+        font-size: 14pt;
+        text-indent: 12px;
+    }
+    .descricao{
+        margin-top: 32px;
+
+        h2{
+            font-size: 24px;
+            font-weight: 400;
+        }
+        textarea {    
+            resize: vertical;
+            font-size: 14px;
+        }
+        button.btn.salvar{
+            height: 30px;
+            width: 80px;
+            font-size: 14px;
+            background-color: #ee744d;
+            color: white;
+            border: none;
+            outline: none;
+        }
+        h3.paragraph{
+            margin-top: 16px;
+            font-size: 14pt;
+        }
+      
+    }
+
+      
+
+
 }

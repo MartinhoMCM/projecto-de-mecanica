@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { DialogData } from './component/menu/menu.component';
 import { Model } from './model/model';
 
 @Injectable({
@@ -11,6 +12,19 @@ export class ServiceService {
   private analiseBehavior = new BehaviorSubject<Model[]>([]);
   private _analiseBehavior = this.analiseBehavior.asObservable();
   private _ordenadaValue_ = this.ordenadaValue.asObservable();
+
+  initializeAnaliseBehavior(){
+   this.analiseBehavior.next([]);
+  }
+
+  onDestroy(){
+    this.analiseBehavior.unsubscribe();
+  }
+
+  private analiseActual = new BehaviorSubject<DialogData>({
+    nomeAnalise:'Análise de viscosidade',
+    unidadeAnalise: 'v'});
+  private _analiseActual_ = this.analiseActual.asObservable();
 
   constructor() { }
 
@@ -31,7 +45,8 @@ export class ServiceService {
 
    getResultData(tipoAnalise:string): Observable<Model[]>{
     if(localStorage.getItem(`${tipoAnalise}`)??''){
-      let data = JSON.parse(localStorage.getItem(`${tipoAnalise}`)??'') as Array<Model>;
+      let data = JSON.parse(localStorage.getItem(`${tipoAnalise}`)??'') as Array<Model>;  
+     this.initializeAnaliseBehavior();
       this.analiseBehavior.next(data);
       return of(data);
     }
@@ -41,9 +56,13 @@ export class ServiceService {
    getResultDataObservable(tipoAnalise:string): Observable<Model[]>{
     if(localStorage.getItem(`${tipoAnalise}`)??''){
       let data = JSON.parse(localStorage.getItem(`${tipoAnalise}`)??'') as Array<Model>;
+      this.initializeAnaliseBehavior();
       this.analiseBehavior.next(data);
-      return of(data);
+      return this._analiseBehavior;
     }
+    this.initializeAnaliseBehavior();
+    this.analiseBehavior.next([]);
+
    return this._analiseBehavior;
    }
    
@@ -69,4 +88,24 @@ export class ServiceService {
     }
       return this._ordenadaValue_;
   }
+
+  saveDescription(analise: string, descricao: string){
+    localStorage.setItem(`${analise}_descricao`, descricao);
+  }
+
+  getDescripton(analise: string): string{
+    return localStorage.getItem(`${analise}_descricao`)??'';
+  }
+
+  saveAnaliseActual(analise: DialogData){
+    this.analiseActual.next(analise);
+  //  this.saveResult(analise);
+  }
+
+  getAnaliseActual(): Observable<DialogData>{
+    return this._analiseActual_;
+  }
+
+
+
 }

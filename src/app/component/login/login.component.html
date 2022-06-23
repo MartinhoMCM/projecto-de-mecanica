@@ -1,24 +1,25 @@
-<mat-card>
-  <mat-card-content>
-    <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
-      <div class="logo"></div>
-      <h2>Faça o Login</h2>
-      <mat-error *ngIf="!loginValid">
-        O nome do usuario e a palavra-passe não são reconhecidas
-      </mat-error>
-      <mat-form-field>
-        <input matInput placeholder="Email" [(ngModel)]="username" name="Nome do Usuário" required>
-        <mat-error>
-         Por favor forneça um email válido
+<div class="container">
+ <mat-card>
+    <mat-card-content>
+      <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+        <h1>Faça o Login</h1>
+        <mat-error *ngIf="!loginValid">
+          O nome do usuario e a palavra-passe não são reconhecidas
         </mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <input matInput type="Senha" placeholder="Password" [(ngModel)]="password" name="Senha" required>
-        <mat-error>
-          Por favor forneça uma palavra-passe válida
-        </mat-error>
-      </mat-form-field>
-      <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid">Login</button>
-    </form>
-  </mat-card-content>
-</mat-card>
+        <mat-form-field>
+          <input matInput placeholder="Email" [(ngModel)]="username" name="Nome do Usuário" required>
+          <mat-error>
+           Por favor forneça um email válido
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput type="Senha" placeholder="Password" [(ngModel)]="password" name="Senha" required>
+          <mat-error>
+            Por favor forneça uma palavra-passe válida
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid">Entrar</button>
+      </form>
+    </mat-card-content>
+  </mat-card> 
+</div>

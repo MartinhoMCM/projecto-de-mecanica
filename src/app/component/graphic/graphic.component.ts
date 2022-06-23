@@ -1,21 +1,24 @@
 import { Chart, ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ImageSnippet, Model } from 'src/app/model/model';
 import AnnotationPlugin, { AnnotationOptions, AnnotationPluginOptions } from "chartjs-plugin-annotation";
 import { ServiceService } from 'src/app/service.service';
 import { FileUploadService } from 'src/app/file-upload.service';
-
+import { Form } from '@angular/forms';
+import { DialogData } from '../menu/menu.component';
+import { MatDialog } from '@angular/material/dialog';
+import { GraphicDialog } from './graphic-modal';
 
 @Component({
   selector: 'app-graphic',
   templateUrl: './graphic.component.html',
   styleUrls: ['./graphic.component.scss']
 })
-export class GraphicComponent implements OnInit {
+export class GraphicComponent implements OnInit, OnDestroy {
 
   @Input() analises : Model[] = new Input();
-  @Input() analiseActual = new Input();
+  analiseActual?: DialogData;
   ordenada:number  = 5;
   resultAnalises: number[] =[];
   dateAnalises: string[] = [];
@@ -24,7 +27,13 @@ export class GraphicComponent implements OnInit {
   shortLink: string = "";
   loading: boolean = false; // Flag variable
   file?: File ; // Variable to store file
+  fileReader?:string | ArrayBuffer | null;
   isUploaded : boolean = false;
+
+  isDescriptionSaved =false;
+  descriptionText ='';
+
+  isUploadImageShowed=false;
   
   public lineChartOptions: ChartConfiguration['options'];
 
@@ -34,57 +43,70 @@ export class GraphicComponent implements OnInit {
   };
 
   constructor(private service: ServiceService,
-    private fileUploadService: FileUploadService) {
+    private fileUploadService: FileUploadService,
+    private dialog: MatDialog) {
     Chart.register(AnnotationPlugin);
-   this.service.getOrdenada().subscribe((data)=>{
-    this.ordenada = data;
-    this.lineChartOptions = {
-        elements: {
-          line: {
-            tension: 0
-          }
-        },
-        scales: {
-          // We use this empty structure as a placeholder for dynamic theming.
-          y: {
-            stacked: true
-          }
-        },
-    
-        plugins: {
-          legend: { display: true },
-          annotation:{
-            annotations:
-            [
-              {
-                type: 'line',
-                scaleID: 'y',
-                value: this.ordenada,
-                borderColor: 'red',
-                borderWidth: 3,
-                label: {
-                  position: 'center',
-                  enabled: true,
-                  color: 'orange',
-                  content: '',
-                  font: {
-                    weight: 'bold'
-                  }
-                }
-              },
-            ]
-          }
-          
-        }
-      };
-
-      });
    }
+  ngOnDestroy(): void {
+    
+  }
 
   ngOnInit(): void {
-    this.service.getResultDataObservable(this.analiseActual.nomeAnalise)
+
+    this.service.getOrdenada().subscribe((data)=>{
+      this.ordenada = data;
+      this.lineChartOptions = {
+          elements: {
+            line: {
+              tension: 0
+            }
+          },
+          scales: {
+            // We use this empty structure as a placeholder for dynamic theming.
+            y: {
+              stacked: true
+            }
+          },
+      
+          plugins: {
+            legend: { display: true },
+            annotation:{
+              annotations:
+              [
+                {
+                  type: 'line',
+                  scaleID: 'y',
+                  value: this.ordenada,
+                  borderColor: 'red',
+                  borderWidth: 3,
+                  label: {
+                    position: 'center',
+                    enabled: true,
+                    color: 'orange',
+                    content: '',
+                    font: {
+                      weight: 'bold'
+                    }
+                  }
+                },
+              ]
+            }
+            
+          }
+        };
+  
+        });
+
+    this.service.getAnaliseActual().subscribe((analiseActual)=>{
+          this.analiseActual =analiseActual;
+          this.getDescription();
+    });
+    this.service.getResultDataObservable(this.analiseActual!.nomeAnalise)
     .subscribe((resultado)=>{
-      console.log("updating ...", resultado);
+      if(resultado.length ===0){
+        this.resultAnalises =[];
+        this.dateAnalises = [];
+      }
       resultado.forEach((data)=>{
         this.resultAnalises.push(+data.result)
         this.dateAnalises.push(data.date.toString().substring(5,10))
@@ -92,10 +114,40 @@ export class GraphicComponent implements OnInit {
       this.setChartData();
     });
    
-   this.fileUploadService.getImageUploaded(this.analiseActual).subscribe((imgName)=>{
-    let img = document.getElementById('img-logo') as HTMLImageElement;
-    img.src =imgName;
+   this.fileUploadService.getImageUploaded(this.analiseActual).subscribe((file)=>{
+       this.fileReader =file;
    });
+
+  }
+
+  openDialog(): void{
+   
+    if(this.file !== null && this.file !== undefined){
+      var reader = new FileReader();
+      reader.readAsDataURL(this.file!);
+      reader.onload = (_)=>{
+        const dialogRef = this.dialog.open( GraphicDialog, {
+          width:'1000px',
+          height: '800px',
+          data : reader.result
+        } );
+        dialogRef.afterClosed().subscribe(result =>{
+          console.log('The dialog was closed');
+        });
+      }
+    }
+    else{
+      const dialogRef = this.dialog.open( GraphicDialog, {
+        width:'1000px',
+        height: '800px',
+        data : this.fileReader
+      } );
+      dialogRef.afterClosed().subscribe(result =>{
+        console.log('The dialog was closed');
+      });
+    }
+  
+      
   }
 
   setChartData(){
@@ -112,27 +164,14 @@ export class GraphicComponent implements OnInit {
           pointHoverBackgroundColor: '#fff',
           pointHoverBorderColor: 'rgba(148,159,177,0.8)',
           fill: 'origin',
-        },
-        // {
-        //   data: [ 28, 48, 40, 19, 86, 27, 90 ],
-        //   label: 'Series B',
-        //   backgroundColor: 'rgba(77,83,96,0.2)',
-        //   borderColor: 'rgba(77,83,96,1)',
-        //   pointBackgroundColor: 'rgba(77,83,96,1)',
-        //   pointBorderColor: '#fff',
-        //   pointHoverBackgroundColor: '#fff',
-        //   pointHoverBorderColor: 'rgba(77,83,96,1)',
-        //   fill: 'origin',
-        // },
-      
+        },      
       ],
       labels: this.dateAnalises
     };
   }
   getResultObservable() :void{
-   this.service.getResultDataObservable(this.analiseActual.nomeAnalise)
+   this.service.getResultDataObservable(this.analiseActual!.nomeAnalise)
     .subscribe((resultado)=>{
-      console.log("updating ...", resultado);
       resultado.forEach((data)=>{
         this.resultAnalises.push(+data.result);
         this.dateAnalises.push(data.toString().substring(5,10))
@@ -141,10 +180,7 @@ export class GraphicComponent implements OnInit {
     this.setChartData();
   }
 
-  
-
   public lineChartType: ChartType = 'line';
-
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   private static generateNumber(i: number): number {
@@ -216,7 +252,6 @@ export class GraphicComponent implements OnInit {
      this.analises.forEach((a)=>{
          this.resultAnalises.push(+a.result)
      });
-     console.log("resultado ", this.resultAnalises);
      return this.resultAnalises;
   }
 
@@ -231,27 +266,69 @@ export class GraphicComponent implements OnInit {
    // On file Select
    onChange(event:any) {
     this.file = event.target.files[0];
+    this.loading =true
 }
 
 // OnClick of button Upload
 onUpload() {
-    this.loading = !this.loading;
-    if(this.file){
-      this.isUploaded = true;
-      let img = document.getElementById('img-logo') as HTMLImageElement;
-      img.src =this.file.name;
+if(this.loading){
+  this.onUploadFile();
+}
+else{
+  this.fileUploadService.getImageUploaded(this.analiseActual).subscribe((source)=>{
+    if(source != null){
+     this.fileReader = source;
+     this.openDialog();
     }
-    this.fileUploadService.upload(this.file!, this.analiseActual).subscribe(
+    // else{
+    //   this.onUploadFile();
+    // }
+  })
+}    
+}
+
+onUploadFile(){
+  if(this.file !== undefined){
+    this.isUploaded = true;
+    this.isUploadImageShowed = true;
+
+    var reader = new FileReader();
+		reader.readAsDataURL(this.file!);
+
+    reader.onload = (_)=>{
+      this.fileUploadService.upload(reader.result, this.analiseActual).subscribe(
         (event: any) => {
             if (typeof (event) === 'object') {
-
+  
                 // Short link via api response
                 this.shortLink = event.link;
-
+  
                 this.loading = false; // Flag variable 
             }
         }
     );
+    }
+
+ 
+  this.openDialog();
+  }
 }
 
+saveDescricao(): void {
+  if(this.descriptionText.length>0){
+    this.service.saveDescription(this.analiseActual!.nomeAnalise,this.descriptionText);
+    this.isDescriptionSaved=true;
+    this.getDescription();
+  }
+  }
+
+  getDescription(){
+   this.descriptionText = this.service.getDescripton(this.analiseActual!.nomeAnalise);
+   if(this.descriptionText.length>0){
+    this.isDescriptionSaved=true;
+   }
+  }
+  editDescricao(){
+    this.isDescriptionSaved=false;
+  }
 }
